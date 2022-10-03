@@ -101,10 +101,18 @@ class PlayView: ARView, ARSessionDelegate {
     }
 }
 
+struct InterActionComponent: Component {
+    static let query = EntityQuery(where: .has(Self.self))
+}
+
 struct CameraComponent: Component {
-    static let query = EntityQuery(where: .has(CameraComponent.self))
+    static let query = EntityQuery(where: .has(Self.self))
 }
 
 struct CrosshairComponent: Component {
-    static let query = EntityQuery(where: .has(CrosshairComponent.self))
+    static let query = EntityQuery(where: .has(Self.self))
+}
+
+struct GrabbedComponent: Component {
+    static let query = EntityQuery(where: .has(Self.self))
 }
