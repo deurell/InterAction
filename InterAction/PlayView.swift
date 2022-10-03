@@ -61,8 +61,23 @@ class PlayView: ARView, ARSessionDelegate {
         let crosshairMesh: MeshResource = .generateSphere(radius: 0.001)
         let crosshairMaterial = SimpleMaterial(color: .green.withAlphaComponent(0.8), roughness: 0.5, isMetallic: false)
         let crosshairEntity = ModelEntity(mesh: crosshairMesh, materials: [crosshairMaterial])
-        crosshairEntity.components.set(InterActionComponent())
+        crosshairEntity.components.set(CrosshairComponent())
         anchor.addChild(crosshairEntity)
+        
+        let pawnEntity = try! Entity.loadModel(named: "Pawn")
+        pawnEntity.model?.materials.append(SimpleMaterial(color: .white, isMetallic: false))
+        pawnEntity.position = [0, 0, 0]
+        pawnEntity.scale = [0.05,0.05,0.05]
+        let size = pawnEntity.visualBounds(relativeTo: pawnEntity).extents
+        let boxShape = ShapeResource.generateBox(size: size)
+        pawnEntity.collision = CollisionComponent(shapes: [boxShape])
+        let physicsMaterial = PhysicsMaterialResource.generate(friction: 1.5, restitution: 0.4)
+        pawnEntity.physicsBody = PhysicsBodyComponent(massProperties: PhysicsMassProperties(shape: boxShape, mass: 0.5),
+                                                        material: physicsMaterial,
+                                                      mode: .kinematic)
+        pawnEntity.physicsMotion = PhysicsMotionComponent()
+        pawnEntity.components.set(InterActionComponent())
+        anchor.addChild(pawnEntity)
     }
     
     private func setupCameraBuddy() {
@@ -88,4 +103,8 @@ class PlayView: ARView, ARSessionDelegate {
 
 struct CameraComponent: Component {
     static let query = EntityQuery(where: .has(CameraComponent.self))
+}
+
+struct CrosshairComponent: Component {
+    static let query = EntityQuery(where: .has(CrosshairComponent.self))
 }

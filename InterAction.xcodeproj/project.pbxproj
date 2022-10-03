@@ -7,18 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		730C451D28CA175D008E5893 /* DiceWhite.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 730C451C28CA175D008E5893 /* DiceWhite.usdz */; };
 		731BAC4B28C88F38001010A9 /* InterActionSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 731BAC4A28C88F38001010A9 /* InterActionSystem.swift */; };
 		731BAC4D28C88FE7001010A9 /* PlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 731BAC4C28C88FE7001010A9 /* PlayView.swift */; };
 		73D2B4C328A3E59B000B6584 /* InterAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73D2B4C228A3E59B000B6584 /* InterAction.swift */; };
 		73D2B4C528A3E59B000B6584 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73D2B4C428A3E59B000B6584 /* ContentView.swift */; };
 		73D2B4C728A3E59C000B6584 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 73D2B4C628A3E59C000B6584 /* Assets.xcassets */; };
 		73D2B4CA28A3E59C000B6584 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 73D2B4C928A3E59C000B6584 /* Preview Assets.xcassets */; };
-		73ED136428EB055C00F1FE9F /* Cone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73ED136328EB055C00F1FE9F /* Cone.swift */; };
+		73ED136628EB35B500F1FE9F /* Pawn.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 73ED136528EB35B500F1FE9F /* Pawn.usdz */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		730C451C28CA175D008E5893 /* DiceWhite.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = DiceWhite.usdz; sourceTree = "<group>"; };
 		731BAC4A28C88F38001010A9 /* InterActionSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterActionSystem.swift; sourceTree = "<group>"; };
 		731BAC4C28C88FE7001010A9 /* PlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayView.swift; sourceTree = "<group>"; };
 		73D2B4BF28A3E59B000B6584 /* InterAction.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = InterAction.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -26,7 +24,7 @@
 		73D2B4C428A3E59B000B6584 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		73D2B4C628A3E59C000B6584 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		73D2B4C928A3E59C000B6584 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		73ED136328EB055C00F1FE9F /* Cone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cone.swift; sourceTree = "<group>"; };
+		73ED136528EB35B500F1FE9F /* Pawn.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Pawn.usdz; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,14 +57,13 @@
 		73D2B4C128A3E59B000B6584 /* InterAction */ = {
 			isa = PBXGroup;
 			children = (
-				730C451C28CA175D008E5893 /* DiceWhite.usdz */,
+				73ED136528EB35B500F1FE9F /* Pawn.usdz */,
 				73D2B4C228A3E59B000B6584 /* InterAction.swift */,
 				73D2B4C428A3E59B000B6584 /* ContentView.swift */,
 				73D2B4C628A3E59C000B6584 /* Assets.xcassets */,
 				73D2B4C828A3E59C000B6584 /* Preview Content */,
 				731BAC4A28C88F38001010A9 /* InterActionSystem.swift */,
 				731BAC4C28C88FE7001010A9 /* PlayView.swift */,
-				73ED136328EB055C00F1FE9F /* Cone.swift */,
 			);
 			path = InterAction;
 			sourceTree = "<group>";
@@ -138,8 +135,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				73D2B4CA28A3E59C000B6584 /* Preview Assets.xcassets in Resources */,
-				730C451D28CA175D008E5893 /* DiceWhite.usdz in Resources */,
 				73D2B4C728A3E59C000B6584 /* Assets.xcassets in Resources */,
+				73ED136628EB35B500F1FE9F /* Pawn.usdz in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -153,7 +150,6 @@
 				73D2B4C528A3E59B000B6584 /* ContentView.swift in Sources */,
 				731BAC4D28C88FE7001010A9 /* PlayView.swift in Sources */,
 				731BAC4B28C88F38001010A9 /* InterActionSystem.swift in Sources */,
-				73ED136428EB055C00F1FE9F /* Cone.swift in Sources */,
 				73D2B4C328A3E59B000B6584 /* InterAction.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
