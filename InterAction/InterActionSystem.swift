@@ -15,14 +15,14 @@ class InterActionSystem : RealityKit.System
         updateCrosshair(camera: camera, crosshair: crosshair)
         
         if let grabbedEntity = context.scene.performQuery(GrabbedComponent.query).map({ $0 }).first {
-            guard let component = grabbedEntity.components[GrabbedComponent.self] as? GrabbedComponent else {return}
+            guard let component = grabbedEntity.components[GrabbedComponent.self] as? GrabbedComponent else { return }
             let moveVector = camera.transform.translation - component.startCameraPosition
-            print(moveVector)
-            grabbedEntity.transform.translation = component.startEntityPosition + moveVector
+            let panOffsetScale: Float = 0.0004
+            grabbedEntity.transform.translation = component.startEntityPosition + moveVector + component.panOffset * panOffsetScale
+            grabbedEntity.components.set(component)
+            // todo: needs to adjust to camera position relative to piece, for now just do forward facing.
             grabbedEntity.transform.rotation = simd_quatf(angle: .pi/2, axis: [0,0,1]) * camera.transform.rotation
         }
-        
-        
     }
     
     func updateCrosshair(camera: Entity?, crosshair: Entity?) {
@@ -31,8 +31,8 @@ class InterActionSystem : RealityKit.System
         else { return }
         
         let cameraForward = camera.transform.matrix.forward
-        let crosshairPosition = camera.position(relativeTo: camera.parent)
-        crosshair.position = crosshairPosition + cameraForward * 0.1
+        let cameraPosition = camera.position(relativeTo: camera.parent)
+        crosshair.position = cameraPosition + cameraForward * 0.1
     }
 }
 

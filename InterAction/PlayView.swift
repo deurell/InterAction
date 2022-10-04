@@ -96,7 +96,6 @@ class PlayView: ARView, ARSessionDelegate {
         guard let camera = camera else { return }
         switch sender.state {
         case .began:
-            print("begin pan")
             let raycasts: [CollisionCastHit] = arView.scene.raycast(origin: camera.position, direction: camera.transform.matrix.forward, length: 10.0, query: .all, mask: .all, relativeTo: nil)
             guard let rayCast: CollisionCastHit = raycasts.first(where: {$0.entity.components.has(InterActionComponent.self)} ) else { break }
             panEntity = rayCast.entity
@@ -104,19 +103,13 @@ class PlayView: ARView, ARSessionDelegate {
             startPanEntityPosition = panEntity!.position
             panEntity?.components.set(GrabbedComponent(startCameraPosition: startPanCameraPosition, startEntityPosition: startPanEntityPosition, panOffset: [0,0,0]))
         case .changed:
-            print("panning")
-            let moveVector = camera.position - startPanCameraPosition
-            let component = panEntity?.components[GrabbedComponent.self] as? GrabbedComponent
-            if var component = component {
-                component.startCameraPosition = startPanCameraPosition
-                component.startEntityPosition = startPanEntityPosition
-                var panOffset: simd_float3 = simd_float3(Float(sender.translation(in: self).x), 0, Float(sender.translation(in: self).y))
-                component.panOffset = panOffset
-                panEntity?.components.set(component)
-            }
-            print(moveVector)
+            guard var component = panEntity?.components[GrabbedComponent.self] as? GrabbedComponent else { break }
+            component.startCameraPosition = startPanCameraPosition
+            component.startEntityPosition = startPanEntityPosition
+            var panOffset: simd_float3 = simd_float3(Float(sender.translation(in: self).x), 0, Float(sender.translation(in: self).y))
+            component.panOffset = panOffset
+            panEntity?.components.set(component)
         case .ended, .cancelled:
-            print("end pan")
             panEntity?.components.remove(GrabbedComponent.self)
             panEntity = nil
         default:
