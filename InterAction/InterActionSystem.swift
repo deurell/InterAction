@@ -10,9 +10,19 @@ class InterActionSystem : RealityKit.System
     
     func update(context: SceneUpdateContext) {
         self.time += context.deltaTime
-        let camera = context.scene.performQuery(CameraComponent.query).map { $0 }.first
-        let crosshair = context.scene.performQuery(CrosshairComponent.query).map { $0 }.first
+        guard let camera = context.scene.performQuery(CameraComponent.query).map({ $0 }).first,
+        let crosshair = context.scene.performQuery(CrosshairComponent.query).map({ $0 }).first else { return }
         updateCrosshair(camera: camera, crosshair: crosshair)
+        
+        if let grabbedEntity = context.scene.performQuery(GrabbedComponent.query).map({ $0 }).first {
+            guard let component = grabbedEntity.components[GrabbedComponent.self] as? GrabbedComponent else {return}
+            let moveVector = camera.transform.translation - component.startCameraPosition
+            print(moveVector)
+            grabbedEntity.transform.translation = component.startEntityPosition + moveVector
+            grabbedEntity.transform.rotation = simd_quatf(angle: .pi/2, axis: [0,0,1]) * camera.transform.rotation
+        }
+        
+        
     }
     
     func updateCrosshair(camera: Entity?, crosshair: Entity?) {
@@ -20,8 +30,14 @@ class InterActionSystem : RealityKit.System
               let crosshair = crosshair
         else { return }
         
-        let cameraForward = normalize(simd_float3(-camera.transform.matrix.columns.2.x, -camera.transform.matrix.columns.2.y, -camera.transform.matrix.columns.2.z))
+        let cameraForward = camera.transform.matrix.forward
         let crosshairPosition = camera.position(relativeTo: camera.parent)
         crosshair.position = crosshairPosition + cameraForward * 0.1
+    }
+}
+
+extension float4x4 {
+    var forward: SIMD3<Float> {
+        normalize(SIMD3<Float>(-columns.2.x, -columns.2.y, -columns.2.z))
     }
 }
