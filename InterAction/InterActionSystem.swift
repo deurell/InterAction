@@ -10,9 +10,10 @@ class InterActionSystem : RealityKit.System
     
     func update(context: SceneUpdateContext) {
         self.time += context.deltaTime
-        guard let camera = context.scene.performQuery(CameraComponent.query).map({ $0 }).first,
-        let crosshair = context.scene.performQuery(CrosshairComponent.query).map({ $0 }).first else { return }
-        updateCrosshair(camera: camera, crosshair: crosshair)
+        guard
+            let camera = context.scene.performQuery(CameraComponent.query).map({ $0 }).first,
+            let crosshair = context.scene.performQuery(CrosshairComponent.query).map({ $0 }).first
+        else { return }
         
         if let grabbedEntity = context.scene.performQuery(GrabbedComponent.query).map({ $0 }).first {
             guard let component = grabbedEntity.components[GrabbedComponent.self] as? GrabbedComponent else { return }
@@ -22,6 +23,9 @@ class InterActionSystem : RealityKit.System
             grabbedEntity.components.set(component)
             // todo: needs to adjust to camera position relative to piece, for now just do forward facing.
             grabbedEntity.transform.rotation = simd_quatf(angle: .pi/2, axis: [0,0,1]) * camera.transform.rotation
+            updateCrosshair(camera: camera, crosshair: crosshair, entity: grabbedEntity)
+        } else {
+            updateCrosshair(camera: camera, crosshair: crosshair)
         }
     }
     
@@ -33,6 +37,16 @@ class InterActionSystem : RealityKit.System
         let cameraForward = camera.transform.matrix.forward
         let cameraPosition = camera.position(relativeTo: camera.parent)
         crosshair.position = cameraPosition + cameraForward * 0.1
+    }
+    
+    func updateCrosshair(camera: Entity?, crosshair: Entity?, entity: Entity?) {
+        guard let camera = camera,
+              let crosshair = crosshair,
+              let entity = entity
+        else { return }
+        
+        let cameraDirectionToEntity = simd_normalize(entity.position(relativeTo: nil) - camera.position(relativeTo: nil))
+        crosshair.position = camera.position(relativeTo: camera.parent) + cameraDirectionToEntity * 0.1
     }
 }
 
