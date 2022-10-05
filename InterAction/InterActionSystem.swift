@@ -28,8 +28,11 @@ class InterActionSystem : RealityKit.System
 
             grabbedEntity.transform.translation = component.startEntityPosition + moveVector + cameraAdjustedOffsetVector
             grabbedEntity.components.set(component)
-            // todo: needs to adjust to camera position relative to piece, for now just do forward facing.
-            grabbedEntity.transform.rotation = simd_quatf(angle: .pi/2, axis: [0,0,1]) * camera.transform.rotation
+            
+            let perpendicularCameraForward = simd_cross([0,1,0], cameraForwardVector)
+
+            grabbedEntity.transform.rotation = simd_quatf(angle: -.pi/3, axis: perpendicularCameraForward) *  simd_quatf(angle: -.pi/2, axis: cameraForwardVector) * camera.transform.rotation
+            
             updateCrosshair(camera: camera, crosshair: crosshair, entity: grabbedEntity)
         } else {
             updateCrosshair(camera: camera, crosshair: crosshair)
