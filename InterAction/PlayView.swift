@@ -102,7 +102,6 @@ class PlayView: ARView, ARSessionDelegate {
             startPanCameraPosition = camera.position
             startPanEntityPosition = panEntity!.position
             panEntity?.components.set(GrabbedComponent(startCameraPosition: startPanCameraPosition, startEntityPosition: startPanEntityPosition, panOffset: [0,0,0]))
-            panEntity?.components.set(GrabbedComponent(startCameraPosition: startPanCameraPosition, startEntityPosition: startPanEntityPosition, panOffset: [0,0,0]))
         case .changed:
             guard var component = panEntity?.components[GrabbedComponent.self] as? GrabbedComponent else { break }
             component.startCameraPosition = startPanCameraPosition

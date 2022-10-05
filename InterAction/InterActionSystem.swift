@@ -14,12 +14,19 @@ class InterActionSystem : RealityKit.System
             let camera = context.scene.performQuery(CameraComponent.query).map({ $0 }).first,
             let crosshair = context.scene.performQuery(CrosshairComponent.query).map({ $0 }).first
         else { return }
-        
+                
         if let grabbedEntity = context.scene.performQuery(GrabbedComponent.query).map({ $0 }).first {
             guard let component = grabbedEntity.components[GrabbedComponent.self] as? GrabbedComponent else { return }
             let moveVector = camera.transform.translation - component.startCameraPosition
             let panOffsetScale: Float = 0.0004
-            grabbedEntity.transform.translation = component.startEntityPosition + moveVector + component.panOffset * panOffsetScale
+            let offsetVector = component.panOffset * panOffsetScale
+
+            let cameraForwardVector = camera.transform.matrix.forward
+            let cameraAngle = atan2(cameraForwardVector.x, cameraForwardVector.z)
+            let adjustmentRotation = simd_quatf(angle: cameraAngle - Float.pi, axis: [0,1,0])
+            let cameraAdjustedOffsetVector = adjustmentRotation.act(offsetVector)
+
+            grabbedEntity.transform.translation = component.startEntityPosition + moveVector + cameraAdjustedOffsetVector
             grabbedEntity.components.set(component)
             // todo: needs to adjust to camera position relative to piece, for now just do forward facing.
             grabbedEntity.transform.rotation = simd_quatf(angle: .pi/2, axis: [0,0,1]) * camera.transform.rotation
