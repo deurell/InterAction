@@ -57,37 +57,27 @@ class PlayView: ARView, ARSessionDelegate {
         directionalLight.position = [1,8,5]
         directionalLight.look(at: [-2,-2,-4], from: directionalLight.position, relativeTo: nil)
         anchor.addChild(directionalLight)
-        
-        let planeSize:simd_float3 = [0.5, 0.5, 0.05]
-        let planeMesh: MeshResource = .generateBox(size: planeSize)
-        let planeMaterial = SimpleMaterial(color: .gray.withAlphaComponent(0.2), roughness: 0.5, isMetallic: false)
-        let planeEntity = ModelEntity(mesh: planeMesh, materials: [planeMaterial])
-        planeEntity.position = [0, 0, 0]
-        planeEntity.transform.rotation = simd_quatf(angle: Float.pi/2, axis: [1,0,0])
-        planeEntity.collision = CollisionComponent(shapes: [.generateBox(size: planeSize)])
-        planeEntity.physicsBody = PhysicsBodyComponent(massProperties: .default, material: .default, mode: .static)
-        anchor.addChild(planeEntity)
-        
+                
         let crosshairMesh: MeshResource = .generateSphere(radius: 0.001)
         let crosshairMaterial = SimpleMaterial(color: .green.withAlphaComponent(0.8), roughness: 0.5, isMetallic: false)
         let crosshairEntity = ModelEntity(mesh: crosshairMesh, materials: [crosshairMaterial])
         crosshairEntity.components.set(CrosshairComponent())
         anchor.addChild(crosshairEntity)
         
-        let pawnEntity = try! Entity.loadModel(named: "Pawn")
-        pawnEntity.model?.materials.append(SimpleMaterial(color: .white, isMetallic: false))
-        pawnEntity.position = [0, 0, 0]
-        pawnEntity.scale = [0.05,0.05,0.05]
-        let size = pawnEntity.visualBounds(relativeTo: pawnEntity).extents
+        let pickupEntity = try! Entity.loadModel(named: "cup")
+        pickupEntity.model?.materials.append(SimpleMaterial(color: .white, isMetallic: false))
+        pickupEntity.position = [0, 0, 0]
+        pickupEntity.scale = .init(repeating: 0.0004)
+        let size = pickupEntity.visualBounds(relativeTo: pickupEntity).extents
         let boxShape = ShapeResource.generateBox(size: size)
-        pawnEntity.collision = CollisionComponent(shapes: [boxShape])
+        pickupEntity.collision = CollisionComponent(shapes: [boxShape])
         let physicsMaterial = PhysicsMaterialResource.generate(friction: 1.5, restitution: 0.4)
-        pawnEntity.physicsBody = PhysicsBodyComponent(massProperties: PhysicsMassProperties(shape: boxShape, mass: 0.5),
+        pickupEntity.physicsBody = PhysicsBodyComponent(massProperties: PhysicsMassProperties(shape: boxShape, mass: 0.5),
                                                       material: physicsMaterial,
                                                       mode: .kinematic)
-        pawnEntity.physicsMotion = PhysicsMotionComponent()
-        pawnEntity.components.set(InterActionComponent())
-        anchor.addChild(pawnEntity)
+        pickupEntity.physicsMotion = PhysicsMotionComponent()
+        pickupEntity.components.set(InterActionComponent())
+        anchor.addChild(pickupEntity)
     }
     
     func setupGestures() {
