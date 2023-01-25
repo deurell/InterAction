@@ -14,23 +14,23 @@ class InterActionSystem : RealityKit.System
             let camera = context.scene.performQuery(CameraComponent.query).map({ $0 }).first,
             let crosshair = context.scene.performQuery(CrosshairComponent.query).map({ $0 }).first
         else { return }
-                
+        
         if let grabbedEntity = context.scene.performQuery(GrabbedComponent.query).map({ $0 }).first {
             guard let component = grabbedEntity.components[GrabbedComponent.self] as? GrabbedComponent else { return }
             let moveVector = camera.transform.translation - component.startCameraPosition
             let panOffsetScale: Float = 0.0004
             let offsetVector = component.panOffset * panOffsetScale
-
+            
             let cameraForwardVector = camera.transform.matrix.forward
             let cameraAngle = atan2(cameraForwardVector.x, cameraForwardVector.z)
             let adjustmentRotation = simd_quatf(angle: cameraAngle - Float.pi, axis: [0,1,0])
             let cameraAdjustedOffsetVector = adjustmentRotation.act(offsetVector)
-
+            
             grabbedEntity.transform.translation = component.startEntityPosition + moveVector + cameraAdjustedOffsetVector
             grabbedEntity.components.set(component)
             
             let perpendicularCameraForward = simd_cross([0,1,0], cameraForwardVector)
-
+            
             grabbedEntity.transform.rotation = simd_quatf(angle: -.pi/3, axis: perpendicularCameraForward) *  simd_quatf(angle: -.pi/2, axis: cameraForwardVector) * camera.transform.rotation
             
             updateCrosshair(camera: camera, crosshair: crosshair, entity: grabbedEntity)
@@ -45,8 +45,8 @@ class InterActionSystem : RealityKit.System
         else { return }
         
         let cameraForward = camera.transform.matrix.forward
-        let cameraPosition = camera.position(relativeTo: camera.parent)
-        crosshair.position = cameraPosition + cameraForward * 0.1
+        let cameraWorldPosition = camera.position(relativeTo: nil)
+        crosshair.setPosition(cameraWorldPosition + cameraForward * 0.1, relativeTo: nil)
     }
     
     func updateCrosshair(camera: Entity?, crosshair: Entity?, entity: Entity?) {
@@ -56,9 +56,11 @@ class InterActionSystem : RealityKit.System
         else { return }
         
         let cameraDirectionToEntity = simd_normalize(entity.position(relativeTo: nil) - camera.position(relativeTo: nil))
-        crosshair.position = camera.position(relativeTo: camera.parent) + cameraDirectionToEntity * 0.1
+        let cameraWorldPosition = camera.position(relativeTo: nil)
+        crosshair.setPosition(cameraWorldPosition  + cameraDirectionToEntity * 0.1, relativeTo: nil)
     }
 }
+
 
 extension float4x4 {
     var forward: SIMD3<Float> {

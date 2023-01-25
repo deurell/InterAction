@@ -2,12 +2,15 @@ import Foundation
 import RealityKit
 import ARKit
 import SwiftUI
+import Combine
 
 class PlayView: ARView, ARSessionDelegate {
     
     var arView: ARView { return self }
     var anchor: AnchorEntity!
     var camera: AnchorEntity?
+    var sub: Cancellable?
+    var initialized:Bool = false
     
     required init(frame frameRect: CGRect) {
         super.init(frame: frameRect)
@@ -24,6 +27,12 @@ class PlayView: ARView, ARSessionDelegate {
         setupCameraBuddy()
         setupPhysicsOrigin()
         setupGestures()
+        
+        scene.anchors.append(anchor)
+        sub = arView.scene.subscribe(to: SceneEvents.AnchoredStateChanged.self) {[weak self] event in
+            guard let self = self else { fatalError() }
+            self.initialized = true
+        }
     }
     
     private func setupARSession() {
@@ -34,9 +43,9 @@ class PlayView: ARView, ARSessionDelegate {
     }
     
     private func setupScene() {
-        anchor = AnchorEntity(.plane(.horizontal, classification: .any,
-                                     minimumBounds: [0.5, 0.5]))
-        scene.anchors.append(anchor)
+        self.anchor = AnchorEntity(.plane(.horizontal, classification: .any,
+                                          minimumBounds: [0.5, 0.5]))
+        guard let anchor = self.anchor else {fatalError()}
         
         let directionalLight = DirectionalLight()
         directionalLight.light.color = .white
@@ -134,7 +143,7 @@ class PlayView: ARView, ARSessionDelegate {
     }
     
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
-        camera?.transform = .init(matrix: frame.camera.transform)
+        self.camera?.transform = .init(matrix: frame.camera.transform)
     }
 }
 
