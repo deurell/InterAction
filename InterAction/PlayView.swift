@@ -67,7 +67,7 @@ class PlayView: ARView, ARSessionDelegate {
         let pickupEntity = try! Entity.loadModel(named: "cup")
         pickupEntity.model?.materials.append(SimpleMaterial(color: .white, isMetallic: false))
         pickupEntity.position = [0, 0, 0]
-        pickupEntity.scale = .init(repeating: 0.0004)
+        pickupEntity.scale = .init(repeating: 0.0005)
         let size = pickupEntity.visualBounds(relativeTo: pickupEntity).extents
         let boxShape = ShapeResource.generateBox(size: size)
         pickupEntity.collision = CollisionComponent(shapes: [boxShape])
