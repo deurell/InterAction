@@ -29,7 +29,7 @@ class InterActionSystem : RealityKit.System
             grabbedEntity.transform.translation = component.startEntityPosition + moveVector + cameraAdjustedOffsetVector
             grabbedEntity.components.set(component)
                         
-            grabbedEntity.transform.rotation =  camera.transform.rotation * simd_quatf(angle: Float.pi/2, axis: [0,0,1]) *  simd_quatf(angle: Float.pi/4, axis: [1,0,0])
+            grabbedEntity.transform.rotation =  camera.transform.rotation  *  simd_quatf(angle: Float.pi/4, axis: [0,1,0]) * simd_quatf(angle: Float.pi/2, axis: [0,0,1])
 
             
             updateCrosshair(camera: camera, crosshair: crosshair, entity: grabbedEntity)
