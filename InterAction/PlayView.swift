@@ -57,7 +57,7 @@ class PlayView: ARView, ARSessionDelegate {
         directionalLight.position = [1,8,5]
         directionalLight.look(at: [-2,-2,-4], from: directionalLight.position, relativeTo: nil)
         anchor.addChild(directionalLight)
-                
+        
         let crosshairMesh: MeshResource = .generateSphere(radius: 0.001)
         let crosshairMaterial = SimpleMaterial(color: .green.withAlphaComponent(0.8), roughness: 0.5, isMetallic: false)
         let crosshairEntity = ModelEntity(mesh: crosshairMesh, materials: [crosshairMaterial])
@@ -73,16 +73,17 @@ class PlayView: ARView, ARSessionDelegate {
         pickupEntity.collision = CollisionComponent(shapes: [boxShape])
         let physicsMaterial = PhysicsMaterialResource.generate(friction: 1.5, restitution: 0.4)
         pickupEntity.physicsBody = PhysicsBodyComponent(massProperties: PhysicsMassProperties(shape: boxShape, mass: 0.5),
-                                                      material: physicsMaterial,
-                                                      mode: .kinematic)
+                                                        material: physicsMaterial,
+                                                        mode: .kinematic)
         pickupEntity.physicsMotion = PhysicsMotionComponent()
         pickupEntity.components.set(InterActionComponent())
         anchor.addChild(pickupEntity)
     }
     
     func setupGestures() {
-        let pan = UIPanGestureRecognizer(target: self, action: #selector(self.didPan(_:)))
-        pan.delaysTouchesBegan = false
+        let pan = UILongPressGestureRecognizer(target: self, action: #selector(self.didPan(_:)))
+        pan.allowableMovement = .infinity
+        pan.minimumPressDuration = .zero
         self.addGestureRecognizer(pan)
     }
     
@@ -91,8 +92,9 @@ class PlayView: ARView, ARSessionDelegate {
     var panEntity: Entity?
     
     @objc
-    func didPan(_ sender: UIPanGestureRecognizer) {
+    func didPan(_ sender: UILongPressGestureRecognizer) {
         guard let camera = camera else { return }
+        let panOffset = simd_float3(Float(sender.location(in: self).x), 0, Float(sender.location(in: self).y))
         switch sender.state {
         case .began:
             let raycasts: [CollisionCastHit] = arView.scene.raycast(origin: camera.position, direction: camera.transform.matrix.forward, length: 10.0, query: .all, mask: .all, relativeTo: nil)
@@ -100,12 +102,14 @@ class PlayView: ARView, ARSessionDelegate {
             panEntity = rayCast.entity
             startPanCameraPosition = camera.position
             startPanEntityPosition = panEntity!.position
-            panEntity?.components.set(GrabbedComponent(startCameraPosition: startPanCameraPosition, startEntityPosition: startPanEntityPosition, panOffset: [0,0,0]))
+            panEntity?.components.set(GrabbedComponent(
+                startCameraPosition: startPanCameraPosition,
+                startEntityPosition: startPanEntityPosition,
+                startPanOffset: panOffset))
         case .changed:
             guard var component = panEntity?.components[GrabbedComponent.self] as? GrabbedComponent else { break }
             component.startCameraPosition = startPanCameraPosition
             component.startEntityPosition = startPanEntityPosition
-            let panOffset: simd_float3 = simd_float3(Float(sender.translation(in: self).x), 0, Float(sender.translation(in: self).y))
             component.panOffset = panOffset
             panEntity?.components.set(component)
         case .ended, .cancelled:
@@ -151,7 +155,20 @@ struct CrosshairComponent: Component {
 
 struct GrabbedComponent: Component {
     static let query = EntityQuery(where: .has(Self.self))
+    
+    init(startCameraPosition: simd_float3, startEntityPosition: simd_float3, startPanOffset: simd_float3) {
+        self.startCameraPosition = startCameraPosition
+        self.startEntityPosition = startEntityPosition
+        self.startPanOffset = startPanOffset
+        self.panOffset = startPanOffset
+    }
+    
+    var panTranslation: simd_float3 {
+        return panOffset - startPanOffset
+    }
+    
     var startCameraPosition: simd_float3
     var startEntityPosition: simd_float3
+    var startPanOffset: simd_float3
     var panOffset: simd_float3
 }

@@ -19,7 +19,7 @@ class InterActionSystem : RealityKit.System
             guard let component = grabbedEntity.components[GrabbedComponent.self] as? GrabbedComponent else { return }
             let moveVector = camera.transform.translation - component.startCameraPosition
             let panOffsetScale: Float = 0.0006
-            let offsetVector = component.panOffset * panOffsetScale
+            let offsetVector = component.panTranslation * panOffsetScale
             
             let cameraForwardVector = camera.transform.matrix.forward
             let cameraAngle = atan2(cameraForwardVector.x, cameraForwardVector.z)
@@ -28,9 +28,9 @@ class InterActionSystem : RealityKit.System
             
             grabbedEntity.transform.translation = component.startEntityPosition + moveVector + cameraAdjustedOffsetVector
             grabbedEntity.components.set(component)
-                        
+            
             grabbedEntity.transform.rotation =  camera.transform.rotation  *  simd_quatf(angle: Float.pi/4, axis: [0,1,0]) * simd_quatf(angle: Float.pi/2, axis: [0,0,1])
-
+            
             
             updateCrosshair(camera: camera, crosshair: crosshair, entity: grabbedEntity)
         } else {
@@ -65,7 +65,7 @@ extension float4x4 {
     var forward: SIMD3<Float> {
         normalize(SIMD3<Float>(-columns.2.x, -columns.2.y, -columns.2.z))
     }
-        
+    
     var right: SIMD3<Float> {
         normalize(SIMD3<Float>(columns.0.x, columns.0.y, columns.0.z))
     }
