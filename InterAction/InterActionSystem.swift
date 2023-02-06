@@ -16,21 +16,19 @@ class InterActionSystem : RealityKit.System
         else { return }
         
         if let grabbedEntity = context.scene.performQuery(GrabbedComponent.query).map({ $0 }).first {
-            guard let component = grabbedEntity.components[GrabbedComponent.self] as? GrabbedComponent else { return }
-            let moveVector = camera.transform.translation - component.startCameraPosition
+            guard let grabbedComponent = grabbedEntity.components[GrabbedComponent.self] as? GrabbedComponent else { return }
+            let moveVector = camera.transform.translation - grabbedComponent.startCameraPosition
             let panOffsetScale: Float = 0.0006
-            let offsetVector = component.panTranslation * panOffsetScale
+            let offsetVector = grabbedComponent.panTranslation * panOffsetScale
             
             let cameraForwardVector = camera.transform.matrix.forward
             let cameraAngle = atan2(cameraForwardVector.x, cameraForwardVector.z)
             let adjustmentRotation = simd_quatf(angle: cameraAngle - Float.pi, axis: [0,1,0])
             let cameraAdjustedOffsetVector = adjustmentRotation.act(offsetVector)
             
-            grabbedEntity.transform.translation = component.startEntityPosition + moveVector + cameraAdjustedOffsetVector
-            grabbedEntity.components.set(component)
-            
+            grabbedEntity.transform.translation = grabbedComponent.startEntityPosition + moveVector + cameraAdjustedOffsetVector
+            grabbedEntity.components.set(grabbedComponent)
             grabbedEntity.transform.rotation =  camera.transform.rotation  *  simd_quatf(angle: Float.pi/4, axis: [0,1,0]) * simd_quatf(angle: Float.pi/2, axis: [0,0,1])
-            
             
             updateCrosshair(camera: camera, crosshair: crosshair, entity: grabbedEntity)
         } else {
@@ -59,7 +57,6 @@ class InterActionSystem : RealityKit.System
         crosshair.setPosition(cameraWorldPosition  + cameraDirectionToEntity * 0.1, relativeTo: nil)
     }
 }
-
 
 extension float4x4 {
     var forward: SIMD3<Float> {
